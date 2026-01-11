@@ -1,0 +1,484 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Users, 
+  TreePine, 
+  Swords, 
+  History, 
+  ShieldAlert, 
+  Leaf, 
+  Eye, 
+  Key, 
+  Menu, 
+  X, 
+  MapPin, 
+  Target,
+  Brain,
+  Zap,
+  Lock,
+  Unlock
+} from 'lucide-react';
+
+const KouenKaiwaiSite = () => {
+  const [isUnderground, setIsUnderground] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
+
+  // Toggle between "Park Mode" and "Underground Mode"
+  const toggleUnderground = () => {
+    setIsUnderground(!isUnderground);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const theme = {
+    bg: isUnderground ? 'bg-slate-950' : 'bg-emerald-50',
+    text: isUnderground ? 'text-emerald-400' : 'text-slate-800',
+    card: isUnderground ? 'bg-slate-900 border-emerald-900' : 'bg-white border-emerald-100',
+    primary: isUnderground ? 'text-red-500' : 'text-emerald-600',
+    accent: isUnderground ? 'bg-emerald-900' : 'bg-emerald-500',
+    nav: isUnderground ? 'bg-slate-900/90 border-b border-emerald-900' : 'bg-white/90 border-b border-emerald-100',
+    button: isUnderground ? 'bg-red-900 hover:bg-red-800 text-white' : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+  };
+
+  const members = [
+    {
+      name: "放尿 (Houryou)",
+      role: "創設者 / 統率役",
+      group: "core",
+      desc_normal: "天性のカリスマを持つ面白役。旅と公園散歩を愛し、新しい公園を見つけると長居してしまう。「水飛ばしの奥義」の創始者。",
+      desc_underground: "組織の「自由」と「推進力」を体現する。かつて敵対組織「農園界隈」のリーダーを務めた過去を持つが、そのカリスマ性で東京中の遊び人を吸い上げた。",
+      icon: <Zap className="w-6 h-6" />
+    },
+    {
+      name: "ニューハーフ (New-Half)",
+      role: "創設者 / 原則の体現者",
+      group: "core",
+      desc_normal: "公園を「多様性が共存する理想郷」と捉える。根は真面目で人との繋がりを大切にするタイプ。",
+      desc_underground: "「最終兵器」「地底に眠る化け物」と称される最強戦力。放尿の暴走を止めるブレーキ役であり、組織の「原則」を守る絶対的な守護者。",
+      icon: <ShieldAlert className="w-6 h-6" />
+    },
+    {
+      name: "尿道 (U-dou)",
+      role: "創設者 / 戦略家",
+      group: "core",
+      desc_normal: "ブランコが高く漕げるお兄さん。スポーツ全般や料理も嗜む。名前は「目の前のものを全て入れたくなる癖」から。",
+      desc_underground: "組織を戦略的集団へ昇華させた冷徹な頭脳。勝利至上主義者であり、敵対組織との二重謀略を行うなど「魂を売りかけている」とも噂される最大の危険因子。",
+      icon: <Brain className="w-6 h-6" />
+    },
+    {
+      name: "リベンジポルノ (Wallet)",
+      role: "情報役 / 界隈ノ財布",
+      group: "core",
+      desc_normal: "ヴィーガンとフェミニズムに関心を持つ。別名「ウォレット」。",
+      desc_underground: "圧倒的な資金力と人脈を持つ情報屋。「公園遊び」が裏社会活動の最強のカモフラージュであることを見抜き、組織に参画した。",
+      icon: <Eye className="w-6 h-6" />
+    },
+    {
+      name: "軍神の簃麽 (Ima)",
+      role: "いまむしり界隈 開拓者",
+      group: "legend",
+      desc_normal: "たった一人で「いまむしり界隈」を立ち上げた伝説の人物。",
+      desc_underground: "「いま」という瞬間の純粋な活動を追求し、組織設立後に姿を消した孤高の軍神。",
+      icon: <History className="w-6 h-6" />
+    },
+    {
+      name: "電磁波シンフォニー",
+      role: "芝踏界隈 / 戦略家",
+      group: "shiba",
+      desc_normal: "みゃくみゃくを愛する淫夢厨。最近芝踏界隈に参加した。",
+      desc_underground: "友好組織「久保田組」の元トップ。敵対する「蘇都池」への対抗策として地位を捨て、公園界隈の傘下に入った実力者。",
+      icon: <Swords className="w-6 h-6" />
+    },
+    {
+      name: "坂山",
+      role: "芝踏界隈 / 奥義継承者",
+      group: "shiba",
+      desc_normal: "放尿から「水飛ばしの奥義」を伝授された継承者。",
+      desc_underground: "仲介組織「4ノッポ」の一員。敵対組織「蘇都池」のリーダー些菌と接触していたが、関係が崩壊しつつある。",
+      icon: <Leaf className="w-6 h-6" />
+    },
+    {
+      name: "鬼頭house",
+      role: "草むしり界隈 No.1",
+      group: "kusa",
+      desc_normal: "卓球マスター。草むしりの合間に卓球をするのが楽しみ。",
+      desc_underground: "草むしり界隈の実質的リーダーであり、4ノッポの一員。冷静な実務家。",
+      icon: <Target className="w-6 h-6" />
+    },
+    {
+      name: "平常心",
+      role: "草むしり界隈 No.3",
+      group: "kusa",
+      desc_normal: "牛丼を愛する巨漢。放尿の幼馴染。",
+      desc_underground: "No.2の座を奪われた屈辱から再起を誓う。その感情を敵対組織に利用されかけている無自覚なキーパーソン。",
+      icon: <Users className="w-6 h-6" />
+    }
+  ];
+
+  const history = [
+    { date: "2023.05.11", title: "活動開始", desc: "放尿とニューハーフが公園での「純粋な活動」を開始。" },
+    { date: "2023.08.23", title: "公園界隈 結成", desc: "尿道が合流し、3名で正式に結成。「公園に行って楽しむ」が唯一の目的に。" },
+    { date: "2024.01.02", title: "拠点「松アツ」設立", desc: "活動拠点を拡大し、より多角的な活動（遊び）が可能に。" },
+    { date: "2024.05.09", title: "農園界隈 抗争勃発", desc: "「結果」を求める農園界隈との全面戦争。放尿が一時敵対するも、ニューハーフの原則により勝利。" },
+    { date: "2024.06.12", title: "草むしり界隈 設立", desc: "組織の土台を固めるため、地道な活動部隊を結成。" },
+    { date: "2024.10.01", title: "ハース界隈 始動", desc: "秘密情報組織が地下で活動開始。「第二ハウスオブハース」を拠点とする。" },
+    { date: "2025.03.06", title: "芝踏界隈 設立", desc: "緩衝地帯として設立。外部の実力者を取り込む窓口となる。" },
+    { date: "2025.06.10", title: "蘇都池との対立激化", desc: "「蘇都池詐欺事件」を経て敵対関係に。電磁波シンフォニーが合流。" }
+  ];
+
+  return (
+    <div className={`min-h-screen font-sans transition-colors duration-700 ${theme.bg} ${theme.text}`}>
+      
+      {/* Navigation */}
+      <nav className={`fixed w-full z-50 transition-colors duration-500 ${theme.nav} backdrop-blur-md`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-2">
+              <TreePine className={`w-8 h-8 ${theme.primary}`} />
+              <span className="font-bold text-xl tracking-wider">公園界隈</span>
+            </div>
+            
+            {/* Desktop Menu */}
+            <div className="hidden md:block">
+              <div className="ml-10 flex items-baseline space-x-8">
+                <a href="#about" className="hover:opacity-70 transition px-3 py-2 rounded-md text-sm font-medium">理念</a>
+                <a href="#history" className="hover:opacity-70 transition px-3 py-2 rounded-md text-sm font-medium">歴史</a>
+                <a href="#org" className="hover:opacity-70 transition px-3 py-2 rounded-md text-sm font-medium">組織図</a>
+                <a href="#members" className="hover:opacity-70 transition px-3 py-2 rounded-md text-sm font-medium">メンバー</a>
+                <button 
+                  onClick={toggleUnderground}
+                  className={`p-2 rounded-full transition-all duration-500 hover:scale-110 ${isUnderground ? 'bg-red-900/50 text-red-500' : 'bg-emerald-100 text-emerald-600'}`}
+                  title={isUnderground ? "表の顔に戻る" : "？？？"}
+                >
+                  {isUnderground ? <Unlock className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden flex items-center">
+               <button 
+                  onClick={toggleUnderground}
+                  className={`mr-4 p-2 rounded-full ${isUnderground ? 'text-red-500' : 'text-emerald-600'}`}
+                >
+                  {isUnderground ? <Unlock className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                </button>
+              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2">
+                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200">
+            <a href="#about" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-slate-800">理念</a>
+            <a href="#history" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-slate-800">歴史</a>
+            <a href="#org" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-slate-800">組織図</a>
+            <a href="#members" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100 dark:hover:bg-slate-800">メンバー</a>
+          </div>
+        )}
+      </nav>
+
+      {/* Hero Section */}
+      <header className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div className={`absolute inset-0 z-0 opacity-20 transition-colors duration-700 ${isUnderground ? 'bg-[url("https://images.unsplash.com/photo-1550751827-4bd374c3f58b")] bg-cover' : 'bg-[url("https://images.unsplash.com/photo-1496062031456-07b8f162a322")] bg-cover'}`}></div>
+        <div className={`absolute inset-0 bg-gradient-to-b ${isUnderground ? 'from-slate-950/80 via-slate-950/50 to-slate-950' : 'from-white/50 via-white/20 to-emerald-50'}`}></div>
+        
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto mt-16">
+          <div className={`inline-block mb-4 px-4 py-1 rounded-full text-sm font-bold tracking-widest border ${isUnderground ? 'border-red-500 text-red-500' : 'border-emerald-600 text-emerald-700'}`}>
+            {isUnderground ? 'WARNING: RESTRICTED ACCESS AREA' : 'KOUEN KAIWAI OFFICIAL SITE'}
+          </div>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
+            {isUnderground ? (
+              <span className="text-red-500 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]">
+                戦略と原則の<br/>戦場へ
+              </span>
+            ) : (
+              <span className="text-emerald-800">
+                公園に行って<br/>楽しむ。
+              </span>
+            )}
+          </h1>
+          <p className={`text-xl md:text-2xl mb-10 max-w-2xl mx-auto leading-relaxed ${isUnderground ? 'text-emerald-500 font-mono' : 'text-slate-600'}`}>
+            {isUnderground 
+              ? "表向きの平和は、最強のカモフラージュに過ぎない。ここは裏切りと陰謀、そして純粋な戦略が交錯する場所。" 
+              : "ただの遊びではありません。それは「過程」を楽しむ至高の活動。私たちは公園という空間で、純粋な喜びを追求する団体です。"}
+          </p>
+          <a href="#about" className={`px-8 py-4 rounded-full font-bold text-lg shadow-lg transition-all hover:shadow-xl transform hover:-translate-y-1 ${theme.button}`}>
+            {isUnderground ? "機密情報へアクセス" : "活動を知る"}
+          </a>
+        </div>
+      </header>
+
+      {/* Philosophy Section */}
+      <section id="about" className={`py-20 px-4 ${isUnderground ? 'bg-slate-900' : 'bg-white'}`}>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${theme.primary}`}>
+              {isUnderground ? "STRATEGIC DOCTRINE" : "基本理念"}
+            </h2>
+            <div className={`h-1 w-20 mx-auto rounded ${theme.accent}`}></div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className={`p-8 rounded-2xl shadow-sm border ${theme.card} hover:shadow-md transition-all`}>
+              <div className={`mb-4 inline-block p-3 rounded-xl ${isUnderground ? 'bg-slate-800' : 'bg-emerald-100'}`}>
+                <Leaf className={`w-8 h-8 ${theme.primary}`} />
+              </div>
+              <h3 className="text-xl font-bold mb-3">純粋な活動</h3>
+              <p className="opacity-80 leading-relaxed">
+                {isUnderground 
+                  ? "「公園遊び」という無邪気な活動は、裏社会の情報戦における最強のカモフラージュである。" 
+                  : "「結果」ではなく「楽しむという過程」を至高の価値とする。曖昧な理念を排除したシンプルな目的。"}
+              </p>
+            </div>
+            <div className={`p-8 rounded-2xl shadow-sm border ${theme.card} hover:shadow-md transition-all`}>
+              <div className={`mb-4 inline-block p-3 rounded-xl ${isUnderground ? 'bg-slate-800' : 'bg-emerald-100'}`}>
+                <Users className={`w-8 h-8 ${theme.primary}`} />
+              </div>
+              <h3 className="text-xl font-bold mb-3">自由と原則</h3>
+              <p className="opacity-80 leading-relaxed">
+                {isUnderground 
+                  ? "放尿の「暴走する自由」とニューハーフの「絶対的原則」。この危険な均衡こそが組織の破壊力を生む。" 
+                  : "放尿の「自由」が推進力となり、ニューハーフの「原則」がブレーキとなる。相反する個性が組織を強くする。"}
+              </p>
+            </div>
+            <div className={`p-8 rounded-2xl shadow-sm border ${theme.card} hover:shadow-md transition-all`}>
+              <div className={`mb-4 inline-block p-3 rounded-xl ${isUnderground ? 'bg-slate-800' : 'bg-emerald-100'}`}>
+                <Target className={`w-8 h-8 ${theme.primary}`} />
+              </div>
+              <h3 className="text-xl font-bold mb-3">勝利と戦略</h3>
+              <p className="opacity-80 leading-relaxed">
+                {isUnderground 
+                  ? "尿道の冷徹な謀略。勝利のためなら二重スパイも厭わない。全ては「戦略」という名の快楽のために。" 
+                  : "「公園に行って楽しむ」。このシンプルすぎる目的こそが、外部からの攻撃を防ぐ最も洗練された防御戦略である。"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* History Timeline */}
+      <section id="history" className={`py-20 px-4 ${isUnderground ? 'bg-slate-950' : 'bg-emerald-50'}`}>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${theme.primary}`}>
+              {isUnderground ? "CLASSIFIED RECORDS" : "界隈の歴史"}
+            </h2>
+            <div className={`h-1 w-20 mx-auto rounded ${theme.accent}`}></div>
+          </div>
+
+          <div className="relative border-l-2 border-emerald-200 dark:border-emerald-900 ml-4 md:ml-0 space-y-12">
+            {history.map((event, index) => (
+              <div key={index} className="relative pl-8 md:pl-0">
+                {/* Dot */}
+                <div className={`absolute top-0 left-[-9px] w-4 h-4 rounded-full border-4 ${isUnderground ? 'bg-red-900 border-slate-900' : 'bg-white border-emerald-500'} md:left-1/2 md:-ml-2`}></div>
+                
+                <div className={`md:flex items-center justify-between ${index % 2 === 0 ? 'md:flex-row-reverse' : ''} group`}>
+                  <div className="md:w-5/12"></div>
+                  <div className="md:w-5/12 mb-2 md:mb-0">
+                    <div className={`p-6 rounded-xl border ${theme.card} relative hover:scale-105 transition-transform duration-300`}>
+                      <span className={`text-sm font-bold tracking-widest block mb-2 ${theme.primary}`}>{event.date}</span>
+                      <h4 className="text-lg font-bold mb-2">{event.title}</h4>
+                      <p className="text-sm opacity-80">{event.desc}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Organization Chart */}
+      <section id="org" className={`py-20 px-4 ${isUnderground ? 'bg-slate-900' : 'bg-white'}`}>
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${theme.primary}`}>
+              {isUnderground ? "CHAIN OF COMMAND" : "組織構造"}
+            </h2>
+            <p className="max-w-2xl mx-auto opacity-70">
+              {isUnderground ? "ピラミッド型の支配構造と隠された情報網" : "役割に応じた界隈の広がり"}
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center space-y-8">
+            {/* Level 1 */}
+            <div className={`w-full max-w-md p-6 rounded-xl text-center border-2 shadow-lg relative ${isUnderground ? 'border-red-600 bg-slate-800' : 'border-emerald-500 bg-emerald-50'}`}>
+              <h3 className="text-xl font-bold mb-2">公園界隈 (The Core)</h3>
+              <p className="text-sm opacity-75">理念と最終意思決定 / 創設者・情報役</p>
+              {isUnderground && <div className="absolute -top-3 -right-3 bg-red-600 text-white text-xs px-2 py-1 rounded">Top Secret</div>}
+            </div>
+
+            {/* Connector */}
+            <div className={`h-8 w-1 ${isUnderground ? 'bg-emerald-900' : 'bg-emerald-200'}`}></div>
+
+            {/* Level 2 Container */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+              
+              {/* Secret Branch */}
+              <div className={`relative p-6 rounded-xl text-center border transition-all duration-500 ${isUnderground ? 'border-red-500 bg-slate-800 opacity-100' : 'border-dashed border-gray-300 bg-gray-50 opacity-50 blur-[2px]'}`}>
+                <div className="flex justify-center mb-2"><Eye className="w-6 h-6" /></div>
+                <h3 className="text-lg font-bold">ハース界隈</h3>
+                <p className="text-xs mt-2">秘密情報組織 / 裏側の活動</p>
+                {isUnderground ? (
+                    <p className="text-xs mt-1 text-red-400">拠点：第二ハウスオブハース</p>
+                ) : (
+                    <div className="absolute inset-0 flex items-center justify-center font-bold text-gray-400">? ? ?</div>
+                )}
+              </div>
+
+              {/* Middle Branch */}
+              <div className={`p-6 rounded-xl text-center border ${theme.card}`}>
+                <div className="flex justify-center mb-2"><Swords className="w-6 h-6" /></div>
+                <h3 className="text-lg font-bold">芝踏界隈</h3>
+                <p className="text-xs mt-2">緩衝地帯 / 実践と外部連携</p>
+              </div>
+
+              {/* Legend Branch */}
+              <div className={`p-6 rounded-xl text-center border ${theme.card}`}>
+                <div className="flex justify-center mb-2"><History className="w-6 h-6" /></div>
+                <h3 className="text-lg font-bold">いまむしり界隈</h3>
+                <p className="text-xs mt-2">精神的支柱 / 伝説</p>
+              </div>
+
+            </div>
+
+            {/* Connector */}
+            <div className={`h-8 w-1 ${isUnderground ? 'bg-emerald-900' : 'bg-emerald-200'}`}></div>
+
+            {/* Level 3 */}
+            <div className={`w-full max-w-md p-6 rounded-xl text-center border ${theme.card}`}>
+              <h3 className="text-xl font-bold mb-2">草むしり界隈</h3>
+              <p className="text-sm opacity-75">活動の土台 / 美化と修練</p>
+              <div className="mt-4 text-xs grid grid-cols-4 gap-2 opacity-70">
+                <span>No.1 鬼頭</span>
+                <span>No.2 サード</span>
+                <span>No.3 平常心</span>
+                <span>No.4 対面</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Members Section */}
+      <section id="members" className={`py-20 px-4 ${isUnderground ? 'bg-slate-950' : 'bg-emerald-50'}`}>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${theme.primary}`}>
+              {isUnderground ? "AGENTS & ASSETS" : "メンバー紹介"}
+            </h2>
+            <div className="flex justify-center flex-wrap gap-2 mt-8">
+              {['all', 'core', 'shiba', 'kusa'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    activeTab === tab 
+                      ? `${theme.accent} text-white` 
+                      : `${isUnderground ? 'bg-slate-800 text-emerald-500' : 'bg-white text-slate-600'} hover:opacity-80`
+                  }`}
+                >
+                  {tab === 'all' ? '全員' : tab === 'core' ? '公園界隈' : tab === 'shiba' ? '芝踏界隈' : '草むしり'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {members
+              .filter(m => activeTab === 'all' || m.group === activeTab)
+              .map((member, index) => (
+              <div key={index} className={`p-6 rounded-2xl border transition-all duration-500 group ${theme.card} hover:-translate-y-1`}>
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`p-3 rounded-xl ${isUnderground ? 'bg-slate-800' : 'bg-emerald-100'}`}>
+                    <div className={theme.primary}>{member.icon}</div>
+                  </div>
+                  <span className="text-xs font-mono opacity-50 uppercase tracking-widest">{member.group}</span>
+                </div>
+                <h3 className="text-xl font-bold mb-1">{member.name}</h3>
+                <p className={`text-sm mb-4 font-medium ${theme.primary}`}>{member.role}</p>
+                <p className="text-sm opacity-80 leading-relaxed min-h-[5rem]">
+                  {isUnderground ? member.desc_underground : member.desc_normal}
+                </p>
+                {isUnderground && member.name === "尿道 (U-dou)" && (
+                  <div className="mt-4 p-2 bg-red-900/20 border border-red-900/50 rounded text-red-400 text-xs animate-pulse">
+                    ⚠ WARNING: 裏切りの兆候あり
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Enemy/Ally Section */}
+      <section className={`py-16 px-4 ${isUnderground ? 'bg-slate-900 border-t border-red-900' : 'bg-white border-t border-emerald-100'}`}>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Enemy */}
+            <div className={`p-6 rounded-xl border-l-4 ${isUnderground ? 'bg-slate-800 border-red-600' : 'bg-red-50 border-red-400'}`}>
+              <h3 className="font-bold text-lg mb-2 flex items-center">
+                <ShieldAlert className="w-5 h-5 mr-2 text-red-500" />
+                敵対組織：蘇都池 (Sutoike)
+              </h3>
+              <p className="text-sm opacity-80 mb-2">リーダー：些菌 (Sakin)</p>
+              <p className="text-sm opacity-70">
+                女性主体の独裁的組織。「蘇都池詐欺事件」により敵対関係へ。現在、熾烈な情報戦の最中にある。
+              </p>
+            </div>
+            {/* Ally */}
+            <div className={`p-6 rounded-xl border-l-4 ${isUnderground ? 'bg-slate-800 border-blue-600' : 'bg-blue-50 border-blue-400'}`}>
+              <h3 className="font-bold text-lg mb-2 flex items-center">
+                <Users className="w-5 h-5 mr-2 text-blue-500" />
+                友好組織：久保田組 (Kubota-gumi)
+              </h3>
+              <p className="text-sm opacity-80 mb-2">旧：快晴軍</p>
+              <p className="text-sm opacity-70">
+                蘇都池と激しく抗争中。元トップの電磁波シンフォニーが公園界隈に合流したことで連携が強化された。
+              </p>
+            </div>
+            {/* Defeated */}
+            <div className={`p-6 rounded-xl border-l-4 ${isUnderground ? 'bg-slate-800 border-gray-600' : 'bg-gray-50 border-gray-400'}`}>
+              <h3 className="font-bold text-lg mb-2 flex items-center opacity-70">
+                <History className="w-5 h-5 mr-2" />
+                過去の敵：農園界隈
+              </h3>
+              <p className="text-sm opacity-80 mb-2">状態：崩壊</p>
+              <p className="text-sm opacity-70">
+                「結果」を求める彼らに対し、「過程」を重視する公園界隈が勝利。放尿が一時リーダーを務めた因縁の相手。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className={`py-12 px-4 text-center ${isUnderground ? 'bg-black text-emerald-800' : 'bg-emerald-900 text-emerald-100'}`}>
+        <div className="max-w-7xl mx-auto flex flex-col items-center">
+          <TreePine className="w-10 h-10 mb-4" />
+          <p className="font-bold text-lg mb-2">公園界隈 (Kouen Kaiwai)</p>
+          <p className="text-sm opacity-60 max-w-md mx-auto mb-8">
+            {isUnderground 
+              ? "監視されています。このサイトへのアクセスログはハース界隈により記録されました。" 
+              : "私たちはいつでも新しい仲間（と公園）を募集しています。ルールは一つ、楽しむこと。"}
+          </p>
+          
+          <div className="flex gap-4 text-sm opacity-50">
+            <a href="#" className="hover:text-white transition">お問い合わせ</a>
+            <a href="#" className="hover:text-white transition">プライバシーポリシー</a>
+            <button onClick={toggleUnderground} className="hover:text-white transition flex items-center gap-1">
+               <Key className="w-3 h-3" /> 管理者ログイン
+            </button>
+          </div>
+          
+          <p className="mt-8 text-xs opacity-30">© 2024-2025 Kouen Kaiwai. Process over Result.</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default KouenKaiwaiSite;
